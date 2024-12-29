@@ -27,29 +27,17 @@ const ImageGenerator = () => {
         e.preventDefault();
         console.log("Request Sent", payload);
 
-        // api key and url
-        const apiURL = import.meta.env.VITE_PIXO_API_URL;
-        const apiKey = import.meta.env.VITE_PIXO_API_KEY;
+        setImageSrc(null);
 
         try{
-            console.log("try block")
-            console.log("API URL:", apiURL);
-            console.log("API Key:", apiKey);
-            console.log("Payload:", payload);
-            
-            const response = await axios.post(apiURL, payload, {
-                responseType: "arraybuffer",
-                headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                    Accept: "Image/*",
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const response = await axios.get(`https://image.pollinations.ai/prompt/{${payload.prompt}}`, { responseType: "arraybuffer" });
             console.log("try block2")
-            console.log(response.data);
+            console.log(response);
             if(response.status === 200){
                 console.log("success");
-                const blob = new Blob([response.data], { type: "image/webp"});
+                const contentType = response.headers['content-type'] || 'image/jpeg';
+                const blob = new Blob([response.data], { type: contentType});
+                
                 const imageUrl = URL.createObjectURL(blob);
                 setImageSrc(imageUrl);
             } else {
@@ -117,6 +105,54 @@ const ImageGenerator = () => {
 
                 </button>
 
+                {/* Made with ❤️ Teja Sayya */}
+                <div className="text-center mt-6 p-4 border-t-2 border-purple-500">
+                    <p className="text-lg text-gray-300 flex justify-center items-center">
+                        Made with ❤️ by{" "}
+                        <span className="font-semibold text-purple-500 flex items-center ml-2">
+                            Teja Sayya
+                            <img className="ml-2" width="35" height="35" src="ynb.png" alt="Teja Logo" />
+                        </span>
+                    </p>
+                </div>
+
+
+                {/* Social Links */}
+                <div className="flex justify-center space-x-6 mt-4">
+                <a
+                    href="https://www.linkedin.com/in/teja-sayya/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-blue-600"
+                >
+                    <i className="fab fa-linkedin fa-2x"></i>
+                </a>
+                <a
+                    href="https://github.com/tejasayya"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-black"
+                >
+                    <i className="fab fa-github fa-2x"></i>
+                </a>
+                <a
+                    href="https://huggingface.co/TejaSayya"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-orange-500"
+                >
+                    <img width="35" height="35" src="https://img.icons8.com/fluency/48/hugging-face_app.png" alt="hugging-face_app"/>
+                </a>
+                <a
+                    href="https://x.com/TejaSayya8222"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-blue-400"
+                >
+                    <img className="bg-white rounded" width="35" height="35" src="https://img.icons8.com/ios-filled/50/twitterx--v1.png" alt="twitterx--v1"/>
+                </a>
+                </div>
+
 
             </form>
 
@@ -125,7 +161,7 @@ const ImageGenerator = () => {
 
             {/* Generated Image TODO */}
             <div className="grid content-center border-2 border-purple-900 rounded-md mx-auto lg:ms-auto overflow-clip w-[500px] h-[500px]">
-                {imageSrc ? ( <img className="mx-auto" src={imageSrc} /> ) : ( <p className="text-center">Something Went Wrong, Try Again</p> )}
+                {imageSrc ? ( <img className="mx-auto" src={imageSrc} /> ) : ( <p className="text-center">Loading...</p> )}
             </div>
 
         </div>
